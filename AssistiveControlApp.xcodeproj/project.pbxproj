@@ -1,0 +1,502 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1714E572544A7CD41FBB7060 /* IntentValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF2F202DE04BB6E1B9EE7C7 /* IntentValidator.swift */; };
+		19686BCC84374D3687173E17 /* LLMModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A42E64BB926B76E8DA262A9 /* LLMModels.swift */; };
+		1E3E66FAF38A7B44F3DC2CA7 /* ActionRegistryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FAC024885ACBCC3E26194E0 /* ActionRegistryTests.swift */; };
+		41AF17C2CE33DA0F49E49F11 /* LLMProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F2A1857C223CEF44BCC4897 /* LLMProvider.swift */; };
+		5B8E083204CD9654422D5056 /* ExecutionEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1BE1CC4B6403493E143834 /* ExecutionEngineTests.swift */; };
+		746432973EA752DFF433B82F /* LocalLLMProviderDecodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A593F9B86B3094F0154DDBEF /* LocalLLMProviderDecodeTests.swift */; };
+		7AFE6B50C78F91E76CA7D7F9 /* ActionRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEA05246352AEEA0F08EB7DB /* ActionRegistry.swift */; };
+		846637A485F3C1DEFBFD1017 /* ExecutionEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC75B9D40D40F1CE99A08915 /* ExecutionEngine.swift */; };
+		8892B424CB048F9F46DE6A46 /* LocalLLMProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA39F7004ACF2B6CB9C9D6A0 /* LocalLLMProvider.swift */; };
+		9546E3275FEA37205398E903 /* RiskLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84454B3567E32FA529DEA12D /* RiskLevel.swift */; };
+		9E58D0C5E34778B86C0C92A3 /* AssistiveControlApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BC9F25442F3C4914817653E /* AssistiveControlApp.swift */; };
+		AB64B14B6EF6796E630AF916 /* PermissionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B442DCE39E16DBDBB5AA1A9 /* PermissionManager.swift */; };
+		CBD1F8AF8B4B6C46AA601120 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23F48D52306FF4FC6B075DF8 /* Logger.swift */; };
+		D6F6C2F02DA5A1EE79BF1C15 /* CloudLLMProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7250A0B309F2097CE8C5916C /* CloudLLMProvider.swift */; };
+		F17994CAA200A7D64BF04A81 /* AccessibilityController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EE757CB29B8F659F268F4AD /* AccessibilityController.swift */; };
+		F326F37960BD717B0AAE77E2 /* Intent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C633FF80D218C3A5E56648E /* Intent.swift */; };
+		F51772858F3ABC8C71D0E50C /* IntentValidatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6B3A1C92561A07096316367 /* IntentValidatorTests.swift */; };
+		F756C2361C6AC3331B0D0EB1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B34AB6E1266A7DB875C1081 /* ContentView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		FACE87C550F6C6CF29107225 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4A3445D3BDEA92720630C216 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 71D7714212B444A0EABEAE59;
+			remoteInfo = AssistiveControlApp;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		1BC9F25442F3C4914817653E /* AssistiveControlApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistiveControlApp.swift; sourceTree = "<group>"; };
+		23F48D52306FF4FC6B075DF8 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
+		2B34AB6E1266A7DB875C1081 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		2D1BE1CC4B6403493E143834 /* ExecutionEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExecutionEngineTests.swift; sourceTree = "<group>"; };
+		2E10C04312A1F051D409D079 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		3B442DCE39E16DBDBB5AA1A9 /* PermissionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionManager.swift; sourceTree = "<group>"; };
+		6D078267D5304E509F42C139 /* AssistiveControlAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AssistiveControlAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6F2A1857C223CEF44BCC4897 /* LLMProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMProvider.swift; sourceTree = "<group>"; };
+		6FAC024885ACBCC3E26194E0 /* ActionRegistryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionRegistryTests.swift; sourceTree = "<group>"; };
+		7250A0B309F2097CE8C5916C /* CloudLLMProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudLLMProvider.swift; sourceTree = "<group>"; };
+		7A42E64BB926B76E8DA262A9 /* LLMModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMModels.swift; sourceTree = "<group>"; };
+		7BF2F202DE04BB6E1B9EE7C7 /* IntentValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntentValidator.swift; sourceTree = "<group>"; };
+		84454B3567E32FA529DEA12D /* RiskLevel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiskLevel.swift; sourceTree = "<group>"; };
+		8EE757CB29B8F659F268F4AD /* AccessibilityController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityController.swift; sourceTree = "<group>"; };
+		9C633FF80D218C3A5E56648E /* Intent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Intent.swift; sourceTree = "<group>"; };
+		9CD1ED7368CA8D99AA63050F /* AssistiveControlApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AssistiveControlApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A593F9B86B3094F0154DDBEF /* LocalLLMProviderDecodeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalLLMProviderDecodeTests.swift; sourceTree = "<group>"; };
+		A6B3A1C92561A07096316367 /* IntentValidatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntentValidatorTests.swift; sourceTree = "<group>"; };
+		AA39F7004ACF2B6CB9C9D6A0 /* LocalLLMProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalLLMProvider.swift; sourceTree = "<group>"; };
+		AEA05246352AEEA0F08EB7DB /* ActionRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionRegistry.swift; sourceTree = "<group>"; };
+		DC75B9D40D40F1CE99A08915 /* ExecutionEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExecutionEngine.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		0CE8391806DCEE51484BE009 /* AssistiveControlApp */ = {
+			isa = PBXGroup;
+			children = (
+				2E10C04312A1F051D409D079 /* Info.plist */,
+				4DF0B6F5848E4AE7C9D4AEC9 /* App */,
+				ACA1F74FEBE01912C3446758 /* Execution */,
+				5117D09359F6C7400C0FCE25 /* Intent */,
+				42FCBB3BE009E2ED665978EE /* LLM */,
+				814890460289BF3B164021E0 /* Utilities */,
+			);
+			path = AssistiveControlApp;
+			sourceTree = "<group>";
+		};
+		42FCBB3BE009E2ED665978EE /* LLM */ = {
+			isa = PBXGroup;
+			children = (
+				7250A0B309F2097CE8C5916C /* CloudLLMProvider.swift */,
+				7A42E64BB926B76E8DA262A9 /* LLMModels.swift */,
+				6F2A1857C223CEF44BCC4897 /* LLMProvider.swift */,
+				AA39F7004ACF2B6CB9C9D6A0 /* LocalLLMProvider.swift */,
+			);
+			path = LLM;
+			sourceTree = "<group>";
+		};
+		4DF0B6F5848E4AE7C9D4AEC9 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				1BC9F25442F3C4914817653E /* AssistiveControlApp.swift */,
+				2B34AB6E1266A7DB875C1081 /* ContentView.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		509CF350BB47284DC815FFC3 = {
+			isa = PBXGroup;
+			children = (
+				0CE8391806DCEE51484BE009 /* AssistiveControlApp */,
+				8C0B34848B7E8080A53717C4 /* AssistiveControlAppTests */,
+				A4B44915024F12BDE49D6C43 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		5117D09359F6C7400C0FCE25 /* Intent */ = {
+			isa = PBXGroup;
+			children = (
+				AEA05246352AEEA0F08EB7DB /* ActionRegistry.swift */,
+				9C633FF80D218C3A5E56648E /* Intent.swift */,
+				7BF2F202DE04BB6E1B9EE7C7 /* IntentValidator.swift */,
+			);
+			path = Intent;
+			sourceTree = "<group>";
+		};
+		814890460289BF3B164021E0 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				23F48D52306FF4FC6B075DF8 /* Logger.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		8C0B34848B7E8080A53717C4 /* AssistiveControlAppTests */ = {
+			isa = PBXGroup;
+			children = (
+				6FAC024885ACBCC3E26194E0 /* ActionRegistryTests.swift */,
+				2D1BE1CC4B6403493E143834 /* ExecutionEngineTests.swift */,
+				A6B3A1C92561A07096316367 /* IntentValidatorTests.swift */,
+				A593F9B86B3094F0154DDBEF /* LocalLLMProviderDecodeTests.swift */,
+			);
+			path = AssistiveControlAppTests;
+			sourceTree = "<group>";
+		};
+		A4B44915024F12BDE49D6C43 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9CD1ED7368CA8D99AA63050F /* AssistiveControlApp.app */,
+				6D078267D5304E509F42C139 /* AssistiveControlAppTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		ACA1F74FEBE01912C3446758 /* Execution */ = {
+			isa = PBXGroup;
+			children = (
+				8EE757CB29B8F659F268F4AD /* AccessibilityController.swift */,
+				DC75B9D40D40F1CE99A08915 /* ExecutionEngine.swift */,
+				3B442DCE39E16DBDBB5AA1A9 /* PermissionManager.swift */,
+				84454B3567E32FA529DEA12D /* RiskLevel.swift */,
+			);
+			path = Execution;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		71D7714212B444A0EABEAE59 /* AssistiveControlApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D38F88BC582C9E9368C12E5C /* Build configuration list for PBXNativeTarget "AssistiveControlApp" */;
+			buildPhases = (
+				4A426FE7942EE299C827389C /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AssistiveControlApp;
+			packageProductDependencies = (
+			);
+			productName = AssistiveControlApp;
+			productReference = 9CD1ED7368CA8D99AA63050F /* AssistiveControlApp.app */;
+			productType = "com.apple.product-type.application";
+		};
+		7372744BC9A36CADDF360335 /* AssistiveControlAppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A7FA826E58A8F87504CFCBB6 /* Build configuration list for PBXNativeTarget "AssistiveControlAppTests" */;
+			buildPhases = (
+				87EFD4F4DC955E7A35030351 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F934B6908B944B9550994DE6 /* PBXTargetDependency */,
+			);
+			name = AssistiveControlAppTests;
+			packageProductDependencies = (
+			);
+			productName = AssistiveControlAppTests;
+			productReference = 6D078267D5304E509F42C139 /* AssistiveControlAppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		4A3445D3BDEA92720630C216 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					71D7714212B444A0EABEAE59 = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = AE9372FB9ACF764042AC4064 /* Build configuration list for PBXProject "AssistiveControlApp" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 509CF350BB47284DC815FFC3;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				71D7714212B444A0EABEAE59 /* AssistiveControlApp */,
+				7372744BC9A36CADDF360335 /* AssistiveControlAppTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		4A426FE7942EE299C827389C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F17994CAA200A7D64BF04A81 /* AccessibilityController.swift in Sources */,
+				7AFE6B50C78F91E76CA7D7F9 /* ActionRegistry.swift in Sources */,
+				9E58D0C5E34778B86C0C92A3 /* AssistiveControlApp.swift in Sources */,
+				D6F6C2F02DA5A1EE79BF1C15 /* CloudLLMProvider.swift in Sources */,
+				F756C2361C6AC3331B0D0EB1 /* ContentView.swift in Sources */,
+				846637A485F3C1DEFBFD1017 /* ExecutionEngine.swift in Sources */,
+				F326F37960BD717B0AAE77E2 /* Intent.swift in Sources */,
+				1714E572544A7CD41FBB7060 /* IntentValidator.swift in Sources */,
+				19686BCC84374D3687173E17 /* LLMModels.swift in Sources */,
+				41AF17C2CE33DA0F49E49F11 /* LLMProvider.swift in Sources */,
+				8892B424CB048F9F46DE6A46 /* LocalLLMProvider.swift in Sources */,
+				CBD1F8AF8B4B6C46AA601120 /* Logger.swift in Sources */,
+				AB64B14B6EF6796E630AF916 /* PermissionManager.swift in Sources */,
+				9546E3275FEA37205398E903 /* RiskLevel.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		87EFD4F4DC955E7A35030351 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1E3E66FAF38A7B44F3DC2CA7 /* ActionRegistryTests.swift in Sources */,
+				5B8E083204CD9654422D5056 /* ExecutionEngineTests.swift in Sources */,
+				F51772858F3ABC8C71D0E50C /* IntentValidatorTests.swift in Sources */,
+				746432973EA752DFF433B82F /* LocalLLMProviderDecodeTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		F934B6908B944B9550994DE6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 71D7714212B444A0EABEAE59 /* AssistiveControlApp */;
+			targetProxy = FACE87C550F6C6CF29107225 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		7F8305EB03DD252C19A8EB5A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5;
+			};
+			name = Debug;
+		};
+		7F88A05EAC65AF4364657EF1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5;
+			};
+			name = Release;
+		};
+		B57C009E52261FE8C2B28E34 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.assistivecontrol.tests;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AssistiveControlApp.app/Contents/MacOS/AssistiveControlApp";
+			};
+			name = Release;
+		};
+		BC86E2F26A24F68244005CCB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.assistivecontrol.tests;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AssistiveControlApp.app/Contents/MacOS/AssistiveControlApp";
+			};
+			name = Debug;
+		};
+		CAB41CE901E0B7C1F663E9CE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = AssistiveControlApp.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_APP_SANDBOX = NO;
+				INFOPLIST_FILE = AssistiveControlApp/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.assistivecontrol.app;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5;
+			};
+			name = Debug;
+		};
+		D1C63403A421F42FB538CE49 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = AssistiveControlApp.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_APP_SANDBOX = NO;
+				INFOPLIST_FILE = AssistiveControlApp/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.assistivecontrol.app;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A7FA826E58A8F87504CFCBB6 /* Build configuration list for PBXNativeTarget "AssistiveControlAppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BC86E2F26A24F68244005CCB /* Debug */,
+				B57C009E52261FE8C2B28E34 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		AE9372FB9ACF764042AC4064 /* Build configuration list for PBXProject "AssistiveControlApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7F8305EB03DD252C19A8EB5A /* Debug */,
+				7F88A05EAC65AF4364657EF1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		D38F88BC582C9E9368C12E5C /* Build configuration list for PBXNativeTarget "AssistiveControlApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CAB41CE901E0B7C1F663E9CE /* Debug */,
+				D1C63403A421F42FB538CE49 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 4A3445D3BDEA92720630C216 /* Project object */;
+}

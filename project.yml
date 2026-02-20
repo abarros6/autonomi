@@ -1,0 +1,50 @@
+name: AssistiveControlApp
+options:
+  bundleIdPrefix: com.assistivecontrol
+  deploymentTarget:
+    macOS: "14.0"
+  xcodeVersion: "15"
+  generateEmptyDirectories: true
+
+settings:
+  base:
+    SWIFT_VERSION: "5"
+    MACOSX_DEPLOYMENT_TARGET: "14.0"
+    ENABLE_HARDENED_RUNTIME: YES
+
+targets:
+  AssistiveControlApp:
+    type: application
+    platform: macOS
+    deploymentTarget: "14.0"
+    sources:
+      - path: AssistiveControlApp
+        excludes:
+          - "Voice/README.md"
+    info:
+      path: AssistiveControlApp/Info.plist
+    entitlements:
+      path: AssistiveControlApp.entitlements
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.assistivecontrol.app
+        SWIFT_VERSION: "5"
+        MACOSX_DEPLOYMENT_TARGET: "14.0"
+        CODE_SIGN_STYLE: Automatic
+        ENABLE_APP_SANDBOX: NO
+        INFOPLIST_FILE: AssistiveControlApp/Info.plist
+        CODE_SIGN_ENTITLEMENTS: AssistiveControlApp.entitlements
+
+  AssistiveControlAppTests:
+    type: bundle.unit-test
+    platform: macOS
+    deploymentTarget: "14.0"
+    sources:
+      - path: AssistiveControlAppTests
+    dependencies:
+      - target: AssistiveControlApp
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.assistivecontrol.tests
+        SWIFT_VERSION: "5"
+        MACOSX_DEPLOYMENT_TARGET: "14.0"
