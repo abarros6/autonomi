@@ -18,11 +18,7 @@
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
-	<key>LSMinimumSystemVersion</key>
-	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
 	<key>NSAccessibilityUsageDescription</key>
 	<string>Assistive Control needs Accessibility access to automate UI interactions on your behalf.</string>
-	<key>NSPrincipalClass</key>
-	<string>NSApplication</string>
 </dict>
 </plist>

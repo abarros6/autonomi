@@ -10,28 +10,46 @@ The full architectural specification lives in `masterprompt.md`.
 
 ## Development Environment Requirements
 
-- **Xcode 15 minimum** (Xcode 16 is also acceptable)
+- **Xcode 15 minimum** (Xcode 16 / 26.2 beta also acceptable)
 - **Swift Language Version: 5.9** — set `SWIFT_VERSION = 5` in Build Settings; do NOT enable Swift 6 strict concurrency
 - **macOS 14.0 minimum deployment target**
 - **App Sandbox must be disabled** — AXUIElement cross-app control does not work in sandboxed apps. `AssistiveControlApp.entitlements` must have `com.apple.security.app-sandbox` set to `false`
 - **`NSAccessibilityUsageDescription`** must be present in `Info.plist`
 
-## Local LLM Setup (Required for Development)
+## xcodegen Gotcha
 
-The app connects to a locally running [Ollama](https://ollama.com) instance.
+The project is generated via xcodegen from `project.yml`. Running `xcodegen generate` **resets** both `AssistiveControlApp/Info.plist` and `AssistiveControlApp.entitlements` to empty stubs. After every `xcodegen generate`, restore:
+
+- `Info.plist` — must contain `NSAccessibilityUsageDescription`
+- `AssistiveControlApp.entitlements` — must contain `com.apple.security.app-sandbox = false`
+
+## LLM Provider Setup
+
+The app supports three LLM backends, configured at first launch via the onboarding flow (or later via the gear icon):
+
+### Local Ollama (recommended for development — no API costs)
 
 ```bash
-# Install Ollama (if not already installed)
 brew install ollama
-
-# Pull the default model
 ollama pull llama3.2
-
-# Start the server (runs on http://localhost:11434 by default)
-ollama serve
+ollama serve          # runs on http://localhost:11434
 ```
 
-Ollama must be running before launching the app. The base URL and model name are injected into `LocalLLMProvider` — defaults are `http://localhost:11434` and `llama3.2`.
+Ollama must be running before launching the app.
+
+### Anthropic (Claude) — API Key
+
+Obtain a key from [console.anthropic.com](https://console.anthropic.com). Billed per token.
+
+**Important — set a spending limit:** Go to Console → Settings → Limits and set a monthly hard cap before using the app. This prevents unbounded charges; the API rejects requests once the cap is reached rather than continuing to bill.
+
+> **Anthropic OAuth / Pro subscription is not available for third-party apps.** As of January 2026, Anthropic actively blocks subscription OAuth tokens outside Claude Code and Claude.ai (server-side enforcement, not just a TOS note). Any third-party OAuth implementation will receive: *"This credential is only authorized for use with Claude Code."* Do not attempt to implement subscription OAuth in this codebase.
+
+### OpenAI (GPT) — API Key
+
+Obtain a key from [platform.openai.com](https://platform.openai.com). Billed per token. ChatGPT Plus/Pro subscriptions are **not** usable for API access — they are entirely separate billing systems with no OAuth bridge.
+
+**Important — set a spending limit:** Go to Platform → Settings → Limits → Monthly budget before using the app.
 
 ## Build & Run
 
@@ -53,8 +71,10 @@ xcodebuild -project AssistiveControlApp.xcodeproj -scheme AssistiveControlApp te
 
 ```
 AssistiveControlApp/
- ├── App/          # SwiftUI entry point and ContentView
- ├── LLM/          # LLMProvider protocol + LocalLLMProvider + CloudLLMProvider stub
+ ├── App/          # SwiftUI entry point, ContentView, OnboardingView
+ ├── LLM/          # LLMProvider protocol, LocalLLMProvider, AnthropicLLMProvider,
+ │                 # OpenAILLMProvider, CloudLLMProvider (stub), LLMConfiguration,
+ │                 # LLMConfigurationStore
  ├── Intent/       # Intent model, IntentValidator, ActionRegistry
  ├── Execution/    # RiskLevel, ExecutionEngine, AccessibilityController, PermissionManager
  ├── Voice/        # README only — voice input is a v2 feature
@@ -64,6 +84,13 @@ AssistiveControlApp/
 ### Data Flow
 
 User input → `LLMProvider.generateIntent()` → `IntentValidator` → `ActionRegistry` → `ExecutionEngine` → `AccessibilityController` → macOS AXUIElement APIs
+
+### LLM Configuration System
+
+- `LLMConfiguration` — non-sensitive config (provider type, model names, Ollama URL) stored in `UserDefaults`
+- `LLMConfigurationStore` — `@MainActor ObservableObject`; owns config persistence, Keychain API key storage, and the `makeProvider()` factory
+- `makeProvider()` is called at **send-time** (not at init), so config changes take effect on the next message without restarting the app
+- API keys are stored in the macOS Keychain under service `com.assistivecontrol.app`
 
 ### Key Architectural Constraints (Non-Negotiable)
 
@@ -95,9 +122,9 @@ All v1 intents are classified `.harmless`. `.moderate` and `.destructive` throw 
 
 ### LLM Integration
 
-`LocalLLMProvider` connects to Ollama via `POST /api/chat`. The system prompt is assembled dynamically at call time from the registered `ActionDescriptor` list. Response decoding is isolated in a private `decodeIntent(_:)` method for testability.
+`LocalLLMProvider` connects to Ollama via `POST /api/chat`. `AnthropicLLMProvider` calls `POST api.anthropic.com/v1/messages` with the system prompt in the top-level `"system"` field (Anthropic API requirement — not in the messages array). `OpenAILLMProvider` calls `POST api.openai.com/v1/chat/completions` with a system message prepended. All three isolate intent decoding in a `decodeIntent(_:)` method for testability.
 
-`CloudLLMProvider` is a stub conforming to `LLMProvider` — do not implement cloud calls until v2.
+`CloudLLMProvider` is a legacy stub — superseded by `AnthropicLLMProvider` and `OpenAILLMProvider`.
 
 ### Permissions
 
@@ -109,4 +136,4 @@ All v1 intents are classified `.harmless`. `.moderate` and `.destructive` throw 
 - File deletion, terminal execution, or any destructive system actions
 - Workflow memory or persistent conversation storage
 - Adaptive personalization
-- Cloud LLM calls (stub only)
+- Anthropic/OpenAI subscription OAuth (blocked by providers for third-party apps)

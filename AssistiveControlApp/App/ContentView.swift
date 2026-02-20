@@ -7,6 +7,7 @@
 //     execution results, and errors
 //   - Status indicator: Idle / Processing / Executing / Error
 //   - Permission gate: shows prompt with link to System Settings when not granted
+//   - Gear icon toolbar button for LLM reconfiguration
 
 import SwiftUI
 
@@ -62,7 +63,8 @@ final class ContentViewModel: ObservableObject {
     @Published var conversation: [ConversationEntry] = []
     @Published var status: AppStatus = .idle
 
-    private let llmProvider: LLMProvider
+    // var (not let) so the provider can be refreshed from the config store on each send.
+    var llmProvider: any LLMProvider
     private let registry: ActionRegistry
     private let validator = IntentValidator()
     private let engine: ExecutionEngine
@@ -72,7 +74,7 @@ final class ContentViewModel: ObservableObject {
     private var llmHistory: [LLMMessage] = []
 
     init(
-        llmProvider: LLMProvider,
+        llmProvider: any LLMProvider,
         registry: ActionRegistry,
         accessibilityController: AccessibilityControlling
     ) {
@@ -183,7 +185,7 @@ final class ContentViewModel: ObservableObject {
         case "type_text":
             let text = intent.parameters["text"] ?? ""
             let preview = String(text.prefix(40))
-            let ellipsis = text.count > 40 ? "…" : ""
+            let ellipsis = text.count > 40 ? "..." : ""
             return "Intent: type text \"\(preview)\(ellipsis)\""
         default:
             return "Intent: \(intent.intent)"
@@ -196,17 +198,21 @@ final class ContentViewModel: ObservableObject {
 struct ContentView: View {
 
     @ObservedObject var permissionManager: PermissionManager
+    @ObservedObject var configStore: LLMConfigurationStore
     @StateObject private var viewModel: ContentViewModel
+
+    @State private var showingSettings = false
 
     init(
         permissionManager: PermissionManager,
-        llmProvider: LLMProvider,
+        configStore: LLMConfigurationStore,
         registry: ActionRegistry,
         accessibilityController: AccessibilityControlling
     ) {
         self.permissionManager = permissionManager
+        self.configStore = configStore
         _viewModel = StateObject(wrappedValue: ContentViewModel(
-            llmProvider: llmProvider,
+            llmProvider: configStore.makeProvider(),
             registry: registry,
             accessibilityController: accessibilityController
         ))
@@ -228,6 +234,23 @@ struct ContentView: View {
             inputArea
         }
         .frame(minWidth: 600, minHeight: 400)
+        .toolbar {
+            ToolbarItem(placement: .automatic) {
+                Button {
+                    showingSettings = true
+                } label: {
+                    Image(systemName: "gearshape")
+                }
+                .help("LLM Settings")
+            }
+        }
+        .sheet(isPresented: $showingSettings) {
+            OnboardingView(configStore: configStore, isReconfiguring: true) {
+                // Refresh the provider so the next send picks up the new config.
+                viewModel.llmProvider = configStore.makeProvider()
+                showingSettings = false
+            }
+        }
         .onReceive(
             NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)
         ) { _ in
@@ -287,7 +310,7 @@ struct ContentView: View {
     private var inputArea: some View {
         VStack(spacing: 0) {
             HStack(spacing: 8) {
-                TextField("Describe what you'd like to do…", text: $viewModel.inputText)
+                TextField("Describe what you'd like to do...", text: $viewModel.inputText)
                     .textFieldStyle(.plain)
                     .font(.body)
                     .padding(8)
@@ -295,10 +318,16 @@ struct ContentView: View {
                     .cornerRadius(8)
                     .onSubmit {
                         guard canSend else { return }
+                        // Refresh provider before send.
+                        viewModel.llmProvider = configStore.makeProvider()
                         viewModel.send()
                     }
 
-                Button(action: { viewModel.send() }) {
+                Button(action: {
+                    // Refresh provider before send so any config changes take effect.
+                    viewModel.llmProvider = configStore.makeProvider()
+                    viewModel.send()
+                }) {
                     Text("Send")
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
@@ -322,6 +351,9 @@ struct ContentView: View {
                 .font(.caption)
                 .foregroundColor(viewModel.status.color)
             Spacer()
+            Text(configStore.configuration.providerType.displayName)
+                .font(.caption)
+                .foregroundColor(.secondary)
         }
         .padding(.horizontal)
         .padding(.bottom, 8)

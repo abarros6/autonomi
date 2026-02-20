@@ -11,15 +11,20 @@
 		19686BCC84374D3687173E17 /* LLMModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A42E64BB926B76E8DA262A9 /* LLMModels.swift */; };
 		1E3E66FAF38A7B44F3DC2CA7 /* ActionRegistryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FAC024885ACBCC3E26194E0 /* ActionRegistryTests.swift */; };
 		41AF17C2CE33DA0F49E49F11 /* LLMProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F2A1857C223CEF44BCC4897 /* LLMProvider.swift */; };
+		41D5A0469E2DE8A4C9406D9C /* LLMConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB776F313C4604EEC16990C9 /* LLMConfiguration.swift */; };
 		5B8E083204CD9654422D5056 /* ExecutionEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1BE1CC4B6403493E143834 /* ExecutionEngineTests.swift */; };
+		63937570DA1A5EF21F824AE2 /* LLMConfigurationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B554ACE0843628755C93E0E /* LLMConfigurationStore.swift */; };
 		746432973EA752DFF433B82F /* LocalLLMProviderDecodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A593F9B86B3094F0154DDBEF /* LocalLLMProviderDecodeTests.swift */; };
 		7AFE6B50C78F91E76CA7D7F9 /* ActionRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEA05246352AEEA0F08EB7DB /* ActionRegistry.swift */; };
 		846637A485F3C1DEFBFD1017 /* ExecutionEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC75B9D40D40F1CE99A08915 /* ExecutionEngine.swift */; };
 		8892B424CB048F9F46DE6A46 /* LocalLLMProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA39F7004ACF2B6CB9C9D6A0 /* LocalLLMProvider.swift */; };
 		9546E3275FEA37205398E903 /* RiskLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84454B3567E32FA529DEA12D /* RiskLevel.swift */; };
 		9E58D0C5E34778B86C0C92A3 /* AssistiveControlApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BC9F25442F3C4914817653E /* AssistiveControlApp.swift */; };
+		A1AAA45D587252393D059DC4 /* AnthropicLLMProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE58BA4ED37F808C69E7EC7C /* AnthropicLLMProvider.swift */; };
 		AB64B14B6EF6796E630AF916 /* PermissionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B442DCE39E16DBDBB5AA1A9 /* PermissionManager.swift */; };
+		BBC5AA097E09AD2EC0DD7C04 /* OpenAILLMProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28E407B9165729B96C92F293 /* OpenAILLMProvider.swift */; };
 		CBD1F8AF8B4B6C46AA601120 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23F48D52306FF4FC6B075DF8 /* Logger.swift */; };
+		D117EF9D18B756D44D739BC4 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D48A2DB3969C6DA996F421 /* OnboardingView.swift */; };
 		D6F6C2F02DA5A1EE79BF1C15 /* CloudLLMProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7250A0B309F2097CE8C5916C /* CloudLLMProvider.swift */; };
 		F17994CAA200A7D64BF04A81 /* AccessibilityController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EE757CB29B8F659F268F4AD /* AccessibilityController.swift */; };
 		F326F37960BD717B0AAE77E2 /* Intent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C633FF80D218C3A5E56648E /* Intent.swift */; };
@@ -40,10 +45,13 @@
 /* Begin PBXFileReference section */
 		1BC9F25442F3C4914817653E /* AssistiveControlApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistiveControlApp.swift; sourceTree = "<group>"; };
 		23F48D52306FF4FC6B075DF8 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
+		28E407B9165729B96C92F293 /* OpenAILLMProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAILLMProvider.swift; sourceTree = "<group>"; };
 		2B34AB6E1266A7DB875C1081 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		2B554ACE0843628755C93E0E /* LLMConfigurationStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMConfigurationStore.swift; sourceTree = "<group>"; };
 		2D1BE1CC4B6403493E143834 /* ExecutionEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExecutionEngineTests.swift; sourceTree = "<group>"; };
 		2E10C04312A1F051D409D079 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		3B442DCE39E16DBDBB5AA1A9 /* PermissionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionManager.swift; sourceTree = "<group>"; };
+		61D48A2DB3969C6DA996F421 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		6D078267D5304E509F42C139 /* AssistiveControlAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AssistiveControlAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F2A1857C223CEF44BCC4897 /* LLMProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMProvider.swift; sourceTree = "<group>"; };
 		6FAC024885ACBCC3E26194E0 /* ActionRegistryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionRegistryTests.swift; sourceTree = "<group>"; };
@@ -58,7 +66,9 @@
 		A6B3A1C92561A07096316367 /* IntentValidatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntentValidatorTests.swift; sourceTree = "<group>"; };
 		AA39F7004ACF2B6CB9C9D6A0 /* LocalLLMProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalLLMProvider.swift; sourceTree = "<group>"; };
 		AEA05246352AEEA0F08EB7DB /* ActionRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionRegistry.swift; sourceTree = "<group>"; };
+		CE58BA4ED37F808C69E7EC7C /* AnthropicLLMProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnthropicLLMProvider.swift; sourceTree = "<group>"; };
 		DC75B9D40D40F1CE99A08915 /* ExecutionEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExecutionEngine.swift; sourceTree = "<group>"; };
+		FB776F313C4604EEC16990C9 /* LLMConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMConfiguration.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -78,10 +88,14 @@
 		42FCBB3BE009E2ED665978EE /* LLM */ = {
 			isa = PBXGroup;
 			children = (
+				CE58BA4ED37F808C69E7EC7C /* AnthropicLLMProvider.swift */,
 				7250A0B309F2097CE8C5916C /* CloudLLMProvider.swift */,
+				FB776F313C4604EEC16990C9 /* LLMConfiguration.swift */,
+				2B554ACE0843628755C93E0E /* LLMConfigurationStore.swift */,
 				7A42E64BB926B76E8DA262A9 /* LLMModels.swift */,
 				6F2A1857C223CEF44BCC4897 /* LLMProvider.swift */,
 				AA39F7004ACF2B6CB9C9D6A0 /* LocalLLMProvider.swift */,
+				28E407B9165729B96C92F293 /* OpenAILLMProvider.swift */,
 			);
 			path = LLM;
 			sourceTree = "<group>";
@@ -91,6 +105,7 @@
 			children = (
 				1BC9F25442F3C4914817653E /* AssistiveControlApp.swift */,
 				2B34AB6E1266A7DB875C1081 /* ContentView.swift */,
+				61D48A2DB3969C6DA996F421 /* OnboardingView.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -232,16 +247,21 @@
 			files = (
 				F17994CAA200A7D64BF04A81 /* AccessibilityController.swift in Sources */,
 				7AFE6B50C78F91E76CA7D7F9 /* ActionRegistry.swift in Sources */,
+				A1AAA45D587252393D059DC4 /* AnthropicLLMProvider.swift in Sources */,
 				9E58D0C5E34778B86C0C92A3 /* AssistiveControlApp.swift in Sources */,
 				D6F6C2F02DA5A1EE79BF1C15 /* CloudLLMProvider.swift in Sources */,
 				F756C2361C6AC3331B0D0EB1 /* ContentView.swift in Sources */,
 				846637A485F3C1DEFBFD1017 /* ExecutionEngine.swift in Sources */,
 				F326F37960BD717B0AAE77E2 /* Intent.swift in Sources */,
 				1714E572544A7CD41FBB7060 /* IntentValidator.swift in Sources */,
+				41D5A0469E2DE8A4C9406D9C /* LLMConfiguration.swift in Sources */,
+				63937570DA1A5EF21F824AE2 /* LLMConfigurationStore.swift in Sources */,
 				19686BCC84374D3687173E17 /* LLMModels.swift in Sources */,
 				41AF17C2CE33DA0F49E49F11 /* LLMProvider.swift in Sources */,
 				8892B424CB048F9F46DE6A46 /* LocalLLMProvider.swift in Sources */,
 				CBD1F8AF8B4B6C46AA601120 /* Logger.swift in Sources */,
+				D117EF9D18B756D44D739BC4 /* OnboardingView.swift in Sources */,
+				BBC5AA097E09AD2EC0DD7C04 /* OpenAILLMProvider.swift in Sources */,
 				AB64B14B6EF6796E630AF916 /* PermissionManager.swift in Sources */,
 				9546E3275FEA37205398E903 /* RiskLevel.swift in Sources */,
 			);
