@@ -25,6 +25,10 @@ protocol AccessibilityControlling {
     func moveMouse(to point: CGPoint) throws
     func moveMouseToElement(applicationName: String, label: String) throws
     func clickAt(point: CGPoint, count: Int) throws
+    func queryFrontmostApp() throws -> String
+    func queryScreenElements(applicationName: String?) throws -> String
+    func drag(from startPoint: CGPoint, to endPoint: CGPoint) throws
+    func dragFromElement(applicationName: String, fromLabel: String, toLabel: String) throws
 }
 
 /// Executes AXUIElement actions. Assumes permission is granted before any call.
@@ -264,6 +268,112 @@ final class AccessibilityController: AccessibilityControlling {
             try postMouseEvent(type: .leftMouseDown, button: .left, at: point, clickState: Int32(clickNumber))
             try postMouseEvent(type: .leftMouseUp,   button: .left, at: point, clickState: Int32(clickNumber))
         }
+    }
+
+    // MARK: - Query Frontmost App
+
+    /// Returns the localised name of the currently active application.
+    func queryFrontmostApp() throws -> String {
+        return NSWorkspace.shared.frontmostApplication?.localizedName ?? "No app active"
+    }
+
+    // MARK: - Query Screen Elements
+
+    /// Lists up to 50 visible AX element labels and roles in the target application.
+    /// Returns a newline-separated string of "<role>: <label>" entries for LLM consumption.
+    func queryScreenElements(applicationName: String?) throws -> String {
+        let appName: String
+        if let name = applicationName, !name.isEmpty {
+            appName = name
+        } else {
+            appName = NSWorkspace.shared.frontmostApplication?.localizedName ?? ""
+        }
+
+        guard !appName.isEmpty else {
+            throw ExecutionError.executionFailed("No application specified and no frontmost app.")
+        }
+        guard let app = runningApplication(named: appName) else {
+            throw ExecutionError.executionFailed("Application '\(appName)' is not running.")
+        }
+
+        let axApp = AXUIElementCreateApplication(app.processIdentifier)
+        var results: [String] = []
+        collectElements(in: axApp, into: &results, limit: 50)
+
+        if results.isEmpty {
+            return "No accessible elements found in \(appName)."
+        }
+        return results.joined(separator: "\n")
+    }
+
+    /// Depth-first traversal collecting "<role>: <label>" strings up to a limit.
+    private func collectElements(in element: AXUIElement, into results: inout [String], limit: Int) {
+        guard results.count < limit else { return }
+
+        var roleRef: AnyObject?
+        var titleRef: AnyObject?
+        var descRef: AnyObject?
+
+        AXUIElementCopyAttributeValue(element, kAXRoleAttribute as CFString, &roleRef)
+        AXUIElementCopyAttributeValue(element, kAXTitleAttribute as CFString, &titleRef)
+        AXUIElementCopyAttributeValue(element, kAXDescriptionAttribute as CFString, &descRef)
+
+        let role  = roleRef as? String ?? ""
+        let label = (titleRef as? String ?? descRef as? String ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+
+        if !label.isEmpty {
+            results.append("\(role): \(label)")
+        }
+
+        guard results.count < limit else { return }
+
+        var childrenRef: AnyObject?
+        guard AXUIElementCopyAttributeValue(element, kAXChildrenAttribute as CFString, &childrenRef) == .success,
+              let children = childrenRef as? [AXUIElement]
+        else { return }
+
+        for child in children {
+            collectElements(in: child, into: &results, limit: limit)
+            if results.count >= limit { break }
+        }
+    }
+
+    // MARK: - Drag (coordinate-based)
+
+    /// Drags from startPoint to endPoint using CGEvent mouse simulation.
+    func drag(from startPoint: CGPoint, to endPoint: CGPoint) throws {
+        logger.info("Dragging from (\(startPoint.x), \(startPoint.y)) to (\(endPoint.x), \(endPoint.y))")
+
+        guard let source = CGEventSource(stateID: .hidSystemState) else {
+            throw ExecutionError.executionFailed("Could not create CGEventSource for drag.")
+        }
+
+        guard
+            let mouseDown = CGEvent(mouseEventSource: source, mouseType: .leftMouseDown,
+                                    mouseCursorPosition: startPoint, mouseButton: .left),
+            let mouseDrag = CGEvent(mouseEventSource: source, mouseType: .leftMouseDragged,
+                                    mouseCursorPosition: endPoint, mouseButton: .left),
+            let mouseUp   = CGEvent(mouseEventSource: source, mouseType: .leftMouseUp,
+                                    mouseCursorPosition: endPoint, mouseButton: .left)
+        else {
+            throw ExecutionError.executionFailed("Could not create drag CGEvents.")
+        }
+
+        mouseDown.post(tap: .cghidEventTap)
+        Thread.sleep(forTimeInterval: 0.05)
+        mouseDrag.post(tap: .cghidEventTap)
+        Thread.sleep(forTimeInterval: 0.05)
+        mouseUp.post(tap: .cghidEventTap)
+    }
+
+    // MARK: - Drag (element-based)
+
+    /// Drags from the center of fromLabel to the center of toLabel within applicationName.
+    func dragFromElement(applicationName: String, fromLabel: String, toLabel: String) throws {
+        logger.info("Dragging from element '\(fromLabel)' to '\(toLabel)' in '\(applicationName)'")
+        let startPoint = try elementCenter(applicationName: applicationName, label: fromLabel, role: nil)
+        let endPoint   = try elementCenter(applicationName: applicationName, label: toLabel,   role: nil)
+        try drag(from: startPoint, to: endPoint)
     }
 
     // MARK: - Private Helpers

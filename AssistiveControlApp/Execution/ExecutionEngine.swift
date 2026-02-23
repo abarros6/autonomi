@@ -59,8 +59,17 @@ final class ExecutionEngine {
             }
             for step in steps {
                 let result = await execute(step)
-                if case .failure(let reason) = result {
+                switch result {
+                case .success:
+                    break
+                case .failure(let reason):
                     return .failure("Step '\(step.intent)' failed: \(reason)")
+                case .clarification(let question):
+                    // Propagate clarification requests out of the sequence.
+                    return .clarification(question)
+                case .observation:
+                    // Observation steps inside a sequence are ignored (sequences are pre-planned).
+                    break
                 }
                 // Pause between steps so the OS can process each action.
                 // App launches need extra time to become accessible in the AX tree.
@@ -141,6 +150,40 @@ final class ExecutionEngine {
                     throw ExecutionError.executionFailed("left_click_coordinates requires numeric x and y values.")
                 }
                 try accessibilityController.clickAt(point: CGPoint(x: x, y: y), count: count)
+
+            case "clarify_request":
+                let question = intent.parameters["question"] ?? "Can you clarify your request?"
+                return .clarification(question)
+
+            case "get_frontmost_app":
+                let result = try accessibilityController.queryFrontmostApp()
+                return .observation("Frontmost app: \(result)")
+
+            case "get_screen_elements":
+                let appName = intent.parameters["application_name"]
+                let result = try accessibilityController.queryScreenElements(applicationName: appName)
+                return .observation("Screen elements:\n\(result)")
+
+            case "drag":
+                if let sxStr = intent.parameters["start_x"], let syStr = intent.parameters["start_y"],
+                   let exStr = intent.parameters["end_x"],   let eyStr = intent.parameters["end_y"],
+                   let sx = Double(sxStr), let sy = Double(syStr),
+                   let ex = Double(exStr), let ey = Double(eyStr) {
+                    try accessibilityController.drag(
+                        from: CGPoint(x: sx, y: sy),
+                        to: CGPoint(x: ex, y: ey)
+                    )
+                } else if let app  = intent.parameters["application_name"],
+                          let from = intent.parameters["from_label"],
+                          let to   = intent.parameters["to_label"] {
+                    try accessibilityController.dragFromElement(
+                        applicationName: app,
+                        fromLabel: from,
+                        toLabel: to
+                    )
+                } else {
+                    throw ExecutionError.executionFailed("drag: missing coordinate or element parameters.")
+                }
 
             default:
                 // Should never reach here — ActionRegistry.riskLevel already gated unknown intents.

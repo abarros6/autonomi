@@ -19,6 +19,10 @@ enum RiskLevel {
 enum ExecutionResult {
     case success
     case failure(String)
+    /// LLM wants to ask the user a question; show it and halt the pipeline.
+    case clarification(String)
+    /// System query result; inject into LLM history and continue the agent loop.
+    case observation(String)
 }
 
 /// Typed errors produced by the execution pipeline.

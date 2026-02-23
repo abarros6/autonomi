@@ -118,7 +118,7 @@ User input → `LLMProvider.generateIntent()` → `IntentValidator` → `ActionR
 struct Intent: Codable, Equatable {
     let intent: String          // see supported intents below
     let parameters: [String: String]
-    let confidence: Double?     // < 0.6 causes validation rejection; nil is allowed
+    let confidence: Double?     // < 0.3 → rejected; 0.3–0.6 → lowConfidenceWarning; nil allowed
     let suggestion: String?     // populated by LLM on "unsupported"; shown to user
     let steps: [Intent]?        // populated when intent == "sequence"
 }
@@ -136,6 +136,10 @@ Supported intents and required parameters:
 - `left_click_coordinates` — `x`, `y`, (optional) `count`
 - `sequence` — no params; child actions in `steps[]`; auto-executes all steps in order
   - 1.5s delay after `open_application` steps, 300ms between all others
+- `clarify_request` — `question`; LLM asks user a question when intent is genuinely ambiguous
+- `get_frontmost_app` — no params; returns name of frontmost app as `.observation`
+- `get_screen_elements` — (optional) `application_name`; returns AX element list as `.observation`
+- `drag` — coordinate form: `start_x`, `start_y`, `end_x`, `end_y`; OR element form: `application_name`, `from_label`, `to_label`
 
 All intents are `.harmless`. `.moderate` / `.destructive` throw `ExecutionError.notPermittedInV1`.
 
@@ -144,6 +148,18 @@ All intents are `.harmless`. `.moderate` / `.destructive` throw `ExecutionError.
 `LocalLLMProvider` connects to Ollama via `POST /api/chat`. `AnthropicLLMProvider` calls `POST api.anthropic.com/v1/messages` with the system prompt in the top-level `"system"` field (Anthropic API requirement). `OpenAILLMProvider` calls `POST api.openai.com/v1/chat/completions` with a system message prepended. All three call `buildSystemPrompt(availableActions:)` from `SystemPrompt.swift`.
 
 `CloudLLMProvider` is a legacy stub — superseded by `AnthropicLLMProvider` and `OpenAILLMProvider`.
+
+### Agentic Loop
+
+`ContentViewModel.processUserMessage()` is a retry wrapper (up to 2 retries) around `runAgentLoop()`. The agent loop:
+1. Calls `LLMProvider.generateIntent()` to get a plan.
+2. Validates with `IntentValidator`.
+3. Executes via `ExecutionEngine`, which returns one of four `ExecutionResult` cases:
+   - `.success` — done; stop.
+   - `.failure(reason)` — feed reason back to LLM and retry (up to 2 times).
+   - `.clarification(question)` — show teal bubble to user; stop and wait for reply.
+   - `.observation(data)` — inject data into `llmHistory`; loop again (max 5 observations).
+4. `AppStatus.observing` (purple) is shown in the status bar during observation steps.
 
 ### UI: Conversation Entry Kinds
 
@@ -154,6 +170,8 @@ All intents are `.harmless`. `.moderate` / `.destructive` throw `ExecutionError.
 | `.executionResult` | `checkmark.circle` (green) | none | "Done." or failure reason |
 | `.errorMessage` | `exclamationmark.triangle` (red) | none | Validation / LLM errors |
 | `.suggestion` | `lightbulb` (blue) | blue tint | LLM's rephrasing suggestion on unsupported requests |
+| `.clarification` | `questionmark.bubble` (teal) | teal tint | LLM asking user a clarifying question |
+| `.lowConfidenceWarning` | `exclamationmark.triangle` (yellow) | yellow tint | Confidence 0.3–0.6; proceeding with caveat |
 
 ### Permissions
 
@@ -162,6 +180,7 @@ All intents are `.harmless`. `.moderate` / `.destructive` throw `ExecutionError.
 ## Roadmap / Open TODOs
 
 ### v1.1 — Reliability & Polish (next)
+- [ ] **CRITICAL — Fix freeze/crash on error**: When a request results in certain error states (e.g. LLM returns unparseable JSON, network timeout mid-request, or an unexpected `nil` in the pipeline), the app becomes unresponsive and stops accepting new input — the status bar stays stuck on "Error" and the Send button never re-enables. Every code path in `processUserMessage()` / `runAgentLoop()` must guarantee `status` is set back to `.idle` before returning, even on unexpected throws. All error exits should be audited to confirm the UI resets correctly.
 - [ ] **Smarter app-launch wait**: Poll the AX tree (up to 5s) instead of a fixed 1.5s delay after `open_application` in sequences
 - [ ] **Address bar focus**: After opening Chrome/Safari, explicitly click the address bar (by AX role `AXTextField` + description "Address and search bar") before typing, rather than relying on system focus
 - [ ] **AX tree depth cap**: Add recursion depth limit in `findElement` to prevent stack overflow on pathologically deep trees (e.g. Chrome DevTools)

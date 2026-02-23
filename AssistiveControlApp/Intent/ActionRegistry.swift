@@ -75,6 +75,30 @@ final class ActionRegistry {
             description: "Executes an ordered series of actions automatically. Use for multi-step tasks like 'create new file in Excel'. The steps array carries the sub-actions.",
             requiredParameters: [],
             optionalParameters: []
+        ),
+        ActionDescriptor(
+            name: "clarify_request",
+            description: "Asks the user a clarifying question when the intent is genuinely ambiguous and the wrong interpretation would be irreversible. The answer is shown in the UI; the user replies to continue.",
+            requiredParameters: ["question"],
+            optionalParameters: []
+        ),
+        ActionDescriptor(
+            name: "get_frontmost_app",
+            description: "Queries the name of the currently active (frontmost) macOS application. Use when the user says 'in the current app' or 'here' without naming an app.",
+            requiredParameters: [],
+            optionalParameters: []
+        ),
+        ActionDescriptor(
+            name: "get_screen_elements",
+            description: "Lists the visible UI elements (labels and roles) in a running application. Use when the user says 'click the button' without specifying a label, or to verify available elements.",
+            requiredParameters: [],
+            optionalParameters: ["application_name"]
+        ),
+        ActionDescriptor(
+            name: "drag",
+            description: "Drags the mouse from one position to another. Use coordinate form (start_x, start_y, end_x, end_y) or element form (application_name, from_label, to_label).",
+            requiredParameters: [],
+            optionalParameters: ["start_x", "start_y", "end_x", "end_y", "application_name", "from_label", "to_label"]
         )
     ]
 
@@ -117,6 +141,14 @@ final class ActionRegistry {
         case "left_click_coordinates":
             return .harmless
         case "sequence":
+            return .harmless
+        case "clarify_request":
+            return .harmless
+        case "get_frontmost_app":
+            return .harmless
+        case "get_screen_elements":
+            return .harmless
+        case "drag":
             return .harmless
         default:
             return nil

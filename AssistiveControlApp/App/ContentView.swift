@@ -26,6 +26,7 @@ enum AppStatus: Equatable {
     case idle
     case processing
     case executing
+    case observing
     case error(String)
 
     var label: String {
@@ -33,6 +34,7 @@ enum AppStatus: Equatable {
         case .idle:        return "Idle"
         case .processing:  return "Processing"
         case .executing:   return "Executing"
+        case .observing:   return "Observing"
         case .error:       return "Error"
         }
     }
@@ -42,6 +44,7 @@ enum AppStatus: Equatable {
         case .idle:        return .secondary
         case .processing:  return .blue
         case .executing:   return .orange
+        case .observing:   return .purple
         case .error:       return .red
         }
     }
@@ -57,6 +60,10 @@ struct ConversationEntry: Identifiable {
         case errorMessage
         /// A rephrasing suggestion returned by the LLM when a request is unsupported.
         case suggestion
+        /// LLM is asking the user a clarifying question (cyan tint, bubble icon).
+        case clarification
+        /// Intent confidence was 0.3–0.6; proceeding but showing a yellow warning.
+        case lowConfidenceWarning
     }
 
     let id = UUID()
@@ -126,40 +133,89 @@ final class ContentViewModel: ObservableObject {
     // MARK: - Processing Pipeline
 
     private func processUserMessage() async {
-        do {
-            // Step 1: Generate intent from LLM.
-            let rawIntent = try await llmProvider.generateIntent(
-                conversation: llmHistory,
-                availableActions: registry.availableActions()
-            )
+        var retryCount = 0
+        let maxRetries = 2
 
-            logger.info("Raw intent received: \(rawIntent.intent)")
+        while retryCount <= maxRetries {
+            let failureReason = await runAgentLoop()
+            guard let reason = failureReason else { return }  // success or clarification — stop
 
-            // Step 2: Validate.
+            retryCount += 1
+            if retryCount <= maxRetries {
+                let retryMsg = "Attempt \(retryCount) failed: \(reason). Retrying..."
+                append(.intentSummary, retryMsg)
+                appendAssistantHistory("Execution failed: \(reason). Trying a different approach.")
+                llmHistory.append(LLMMessage(role: .user, content:
+                    "The previous attempt failed: \(reason). Please plan a different approach."))
+            } else {
+                status = .error("Failed after \(maxRetries) retries: \(reason)")
+                append(.errorMessage, "Could not complete the request after \(maxRetries) attempts.")
+            }
+        }
+    }
+
+    /// Runs one pass of the think→observe→act loop.
+    /// Returns nil on success or clarification (no retry needed).
+    /// Returns a non-nil failure reason to trigger a retry.
+    private func runAgentLoop() async -> String? {
+        var observationCount = 0
+        let maxObservations = 5
+
+        while true {
+            status = .processing
+
+            let rawIntent: Intent
+            do {
+                rawIntent = try await llmProvider.generateIntent(
+                    conversation: llmHistory,
+                    availableActions: registry.availableActions()
+                )
+            } catch let error as LLMProviderError {
+                status = .error(error.localizedDescription)
+                append(.errorMessage, error.localizedDescription)
+                logger.error("LLMProviderError: \(error.localizedDescription)")
+                return error.localizedDescription
+            } catch {
+                status = .error(error.localizedDescription)
+                append(.errorMessage, error.localizedDescription)
+                logger.error("Unexpected error: \(error.localizedDescription)")
+                return error.localizedDescription
+            }
+
+            logger.info("Raw intent: \(rawIntent.intent)")
+
             let validation = validator.validate(rawIntent)
 
             switch validation {
             case .unsupported(let message, let suggestion):
                 status = .idle
-                append(.intentSummary, "Intent: unsupported")
-                append(.errorMessage, message)
-                if let suggestion = suggestion, !suggestion.isEmpty {
-                    append(.suggestion, suggestion)
-                }
-                appendAssistantHistory("Intent was unsupported: \(message)")
+                append(.intentSummary, "Could not complete: \(message)")
+                if let s = suggestion, !s.isEmpty { append(.suggestion, s) }
+                appendAssistantHistory("Intent unsupported: \(message)")
+                return nil  // not a retry-worthy failure
 
             case .invalid(let error):
-                status = .error(error.localizedDescription)
-                append(.intentSummary, "Intent: \(rawIntent.intent) (invalid)")
-                append(.errorMessage, error.localizedDescription)
-                appendAssistantHistory("Validation error: \(error.localizedDescription)")
+                let desc = error.localizedDescription
+                status = .error(desc)
+                append(.intentSummary, "Invalid intent: \(desc)")
+                append(.errorMessage, desc)
+                appendAssistantHistory("Validation error: \(desc)")
+                return desc
+
+            case .lowConfidenceWarning(let intent, let warning):
+                append(.lowConfidenceWarning, warning)
+                appendAssistantHistory("Low-confidence intent: \(intent.intent)")
+                let summary = intentSummary(for: intent)
+                append(.intentSummary, summary)
+                status = .executing
+                let result = await engine.execute(intent)
+                return handleExecutionResult(result, intent: intent)
 
             case .valid(let intent):
                 let summary = intentSummary(for: intent)
                 append(.intentSummary, summary)
                 status = .executing
 
-                // Step 3: Execute.
                 let result = await engine.execute(intent)
 
                 switch result {
@@ -167,23 +223,62 @@ final class ContentViewModel: ObservableObject {
                     status = .idle
                     append(.executionResult, "Done.")
                     appendAssistantHistory("Executed: \(intent.intent)")
+                    return nil
 
                 case .failure(let reason):
                     status = .error(reason)
                     append(.executionResult, "Failed: \(reason)")
                     appendAssistantHistory("Execution failed: \(reason)")
+                    return reason
+
+                case .clarification(let question):
+                    status = .idle
+                    append(.clarification, question)
+                    appendAssistantHistory("Asked user: \(question)")
+                    return nil  // wait for user reply; no retry
+
+                case .observation(let data):
+                    observationCount += 1
+                    if observationCount > maxObservations {
+                        let reason = "Exceeded maximum observation steps."
+                        status = .error(reason)
+                        append(.errorMessage, reason)
+                        return reason
+                    }
+                    status = .observing
+                    let preview = String(data.prefix(120)) + (data.count > 120 ? "..." : "")
+                    append(.intentSummary, "Observed: \(preview)")
+                    appendAssistantHistory("System observation: \(data)")
+                    llmHistory.append(LLMMessage(role: .user,
+                        content: "Observation result: \(data)\n\nNow continue planning and produce the next action JSON."))
+                    // Loop continues — ask LLM again with the observation result.
                 }
             }
+        }
+    }
 
-        } catch let error as LLMProviderError {
-            status = .error(error.localizedDescription)
-            append(.errorMessage, error.localizedDescription)
-            logger.error("LLMProviderError: \(error.localizedDescription)")
-
-        } catch {
-            status = .error(error.localizedDescription)
-            append(.errorMessage, error.localizedDescription)
-            logger.error("Unexpected error: \(error.localizedDescription)")
+    /// Shared handler for executing a (possibly low-confidence) validated intent.
+    /// Returns nil on success or clarification; returns a reason string on failure.
+    private func handleExecutionResult(_ result: ExecutionResult, intent: Intent) -> String? {
+        switch result {
+        case .success:
+            status = .idle
+            append(.executionResult, "Done.")
+            appendAssistantHistory("Executed: \(intent.intent)")
+            return nil
+        case .failure(let reason):
+            status = .error(reason)
+            append(.executionResult, "Failed: \(reason)")
+            appendAssistantHistory("Execution failed: \(reason)")
+            return reason
+        case .clarification(let question):
+            status = .idle
+            append(.clarification, question)
+            appendAssistantHistory("Asked user: \(question)")
+            return nil
+        case .observation:
+            // Low-confidence branch never produces observation — treat as unexpected failure.
+            return "Unexpected observation result in low-confidence branch."
         }
     }
 
@@ -240,6 +335,25 @@ final class ContentViewModel: ObservableObject {
         case "sequence":
             let count = intent.steps?.count ?? 0
             return "Intent: sequence (\(count) step\(count == 1 ? "" : "s"))"
+        case "clarify_request":
+            let q = intent.parameters["question"] ?? "?"
+            return "Clarifying: \(String(q.prefix(60)))"
+        case "get_frontmost_app":
+            return "Observing: querying frontmost app"
+        case "get_screen_elements":
+            let app = intent.parameters["application_name"] ?? "frontmost app"
+            return "Observing: listing elements in \(app)"
+        case "drag":
+            if let app = intent.parameters["application_name"] {
+                let from = intent.parameters["from_label"] ?? "?"
+                let to   = intent.parameters["to_label"] ?? "?"
+                return "Intent: drag '\(from)' to '\(to)' in \(app)"
+            }
+            let sx = intent.parameters["start_x"] ?? "?"
+            let sy = intent.parameters["start_y"] ?? "?"
+            let ex = intent.parameters["end_x"] ?? "?"
+            let ey = intent.parameters["end_y"] ?? "?"
+            return "Intent: drag from (\(sx),\(sy)) to (\(ex),\(ey))"
         default:
             return "Intent: \(intent.intent)"
         }
@@ -471,15 +585,27 @@ struct ConversationEntryRow: View {
         .padding(.horizontal, 8)
         .padding(.vertical, 6)
         .background(suggestionBackground)
-        .cornerRadius(entry.kind == .suggestion ? 8 : 0)
-        .padding(.vertical, entry.kind == .suggestion ? 2 : 0)
+        .cornerRadius(hasBackground ? 8 : 0)
+        .padding(.vertical, hasBackground ? 2 : 0)
+    }
+
+    private var hasBackground: Bool {
+        switch entry.kind {
+        case .suggestion, .clarification, .lowConfidenceWarning: return true
+        default: return false
+        }
     }
 
     @ViewBuilder
     private var suggestionBackground: some View {
-        if entry.kind == .suggestion {
+        switch entry.kind {
+        case .suggestion:
             Color.blue.opacity(0.10)
-        } else {
+        case .clarification:
+            Color.teal.opacity(0.10)
+        case .lowConfidenceWarning:
+            Color.yellow.opacity(0.12)
+        default:
             Color.clear
         }
     }
@@ -502,6 +628,12 @@ struct ConversationEntryRow: View {
             case .suggestion:
                 Image(systemName: "lightbulb")
                     .foregroundColor(.blue)
+            case .clarification:
+                Image(systemName: "questionmark.bubble")
+                    .foregroundColor(.teal)
+            case .lowConfidenceWarning:
+                Image(systemName: "exclamationmark.triangle")
+                    .foregroundColor(.yellow)
             }
         }
         .frame(width: 20)

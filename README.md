@@ -11,6 +11,8 @@ The interface is a small floating panel that stays visible above all other apps 
 3. `IntentValidator` checks the intent against the action schema and rejects anything malformed or unsupported
 4. `ExecutionEngine` routes the validated intent through `AccessibilityController` → AXUIElement/CGEvent APIs
 5. Multi-step commands run automatically as a `sequence` — e.g. "create a new file in Excel" expands to [open Excel → Cmd+N]
+6. If execution fails, the error is fed back to the LLM for up to 2 automatic retries with a revised plan
+7. When the LLM needs to observe system state first, it issues `get_frontmost_app` or `get_screen_elements` observation intents; results are injected into conversation history and the loop continues
 
 The LLM is a planner only. All execution paths are explicit and auditable. Unsupported requests return a specific rephrasing suggestion rather than a blank error.
 
@@ -77,7 +79,7 @@ The app lives in your menu bar (`person.wave.2` icon) and does not appear in the
 
 | Intent | Example | Notes |
 |---|---|---|
-| Open app | "open Safari" | Uses bundle ID |
+| Open app | "open Safari" / "open my browser" | Uses bundle ID; resolves vague names automatically |
 | Click element | "click the OK button in TextEdit" | AX label lookup |
 | Type text | "type Hello World" | Max 500 chars |
 | Press key | "press Cmd+S" | Supports all modifiers |
@@ -86,9 +88,28 @@ The app lives in your menu bar (`person.wave.2` icon) and does not appear in the
 | Scroll | "scroll down in Safari" | up/down/left/right |
 | Click at coords | "click at 200, 400" | Pixel coordinates |
 | Move mouse | "move mouse to the close button" | AX element or coords |
+| Drag | "drag the file to Documents" | Coordinate or element form |
 | Multi-step | "create a new file in Excel" | Runs steps automatically |
+| Observe app | "what app is open?" | Queries frontmost app name |
+| Observe elements | "click the button in this app" | Lists AX elements, then acts |
+| Clarify | "delete the document" (ambiguous) | LLM asks which one |
 
-Unsupported requests return a suggestion (lightbulb icon) rather than a bare error.
+Confidence below 0.3 returns "unsupported" with a suggestion. Confidence 0.3–0.6 proceeds with a yellow warning shown in the conversation. Failed requests are automatically retried up to 2 times with a revised plan before giving up.
+
+## Conversation UI
+
+| Entry | Icon | Colour | Meaning |
+|---|---|---|---|
+| User message | person.circle | accent | Your typed input |
+| Intent summary | bolt.circle | blue | What the LLM planned |
+| Done | checkmark.circle | green | Action succeeded |
+| Failed | checkmark.circle | green | Action result with failure reason |
+| Error | exclamationmark.triangle | red | Validation or LLM error |
+| Suggestion | lightbulb | blue | How to rephrase an unsupported request |
+| Clarification | questionmark.bubble | teal | LLM is asking you a question |
+| Low confidence | exclamationmark.triangle | yellow | Proceeding with a tentative plan |
+
+Status bar shows: **Idle** · **Processing** (blue) · **Executing** (orange) · **Observing** (purple) · **Error** (red)
 
 ## Architecture
 
@@ -105,7 +126,7 @@ AssistiveControlApp/
  └── Utilities/    # Logger
 ```
 
-See `CLAUDE.md` for development guidance and architecture details.
+See `CLAUDE.md` for development guidance and full architecture details.
 
 ## Security model
 
@@ -116,12 +137,18 @@ See `CLAUDE.md` for development guidance and architecture details.
 - App Sandbox is disabled (required for cross-app AXUIElement control)
 - All CF type casts from AX APIs are verified with `CFGetTypeID` before use
 
+## Known Issues
+
+- **App becomes unresponsive after an unprocessable request** — when a request results in certain error states (e.g. LLM parse failure, unexpected nil), the app can stop accepting new input. Workaround: use "New Session" from the menu bar to reset state. Fix tracked in v1.1.
+
 ## Roadmap
 
 ### Next (v1.1)
+- [ ] **Fix crash/freeze on error** — app becomes unresponsive after certain unprocessable requests; errors must be caught and the UI must return to `.idle` so new input can be sent
 - [ ] Smarter app-launch detection: poll AX tree instead of fixed delay
 - [ ] Retry on element-not-found in sequences (3× with back-off)
 - [ ] AX tree depth cap to prevent stack overflow on complex apps
+- [ ] Address bar auto-focus after opening a browser
 
 ### v2 — Voice Input
 - [ ] `SFSpeechRecognizer` integration for hands-free command entry
