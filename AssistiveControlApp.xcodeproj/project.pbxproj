@@ -15,12 +15,15 @@
 		5B8E083204CD9654422D5056 /* ExecutionEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1BE1CC4B6403493E143834 /* ExecutionEngineTests.swift */; };
 		63937570DA1A5EF21F824AE2 /* LLMConfigurationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B554ACE0843628755C93E0E /* LLMConfigurationStore.swift */; };
 		746432973EA752DFF433B82F /* LocalLLMProviderDecodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A593F9B86B3094F0154DDBEF /* LocalLLMProviderDecodeTests.swift */; };
+		790A0CA0E5E323BE8558583A /* SystemPrompt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 163311AE42AD74FEA7554ED5 /* SystemPrompt.swift */; };
 		7AFE6B50C78F91E76CA7D7F9 /* ActionRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEA05246352AEEA0F08EB7DB /* ActionRegistry.swift */; };
 		846637A485F3C1DEFBFD1017 /* ExecutionEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC75B9D40D40F1CE99A08915 /* ExecutionEngine.swift */; };
 		8892B424CB048F9F46DE6A46 /* LocalLLMProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA39F7004ACF2B6CB9C9D6A0 /* LocalLLMProvider.swift */; };
+		8C908FF5B23898A369F0C6F1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90FFAC5CD5D0544EA098266A /* AppDelegate.swift */; };
 		9546E3275FEA37205398E903 /* RiskLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84454B3567E32FA529DEA12D /* RiskLevel.swift */; };
 		9E58D0C5E34778B86C0C92A3 /* AssistiveControlApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BC9F25442F3C4914817653E /* AssistiveControlApp.swift */; };
 		A1AAA45D587252393D059DC4 /* AnthropicLLMProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE58BA4ED37F808C69E7EC7C /* AnthropicLLMProvider.swift */; };
+		A47336335FB92F27BD3059AC /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8B688EA7B78B3C757119C3 /* SettingsView.swift */; };
 		AB64B14B6EF6796E630AF916 /* PermissionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B442DCE39E16DBDBB5AA1A9 /* PermissionManager.swift */; };
 		BBC5AA097E09AD2EC0DD7C04 /* OpenAILLMProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28E407B9165729B96C92F293 /* OpenAILLMProvider.swift */; };
 		CBD1F8AF8B4B6C46AA601120 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23F48D52306FF4FC6B075DF8 /* Logger.swift */; };
@@ -43,6 +46,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		163311AE42AD74FEA7554ED5 /* SystemPrompt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemPrompt.swift; sourceTree = "<group>"; };
 		1BC9F25442F3C4914817653E /* AssistiveControlApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistiveControlApp.swift; sourceTree = "<group>"; };
 		23F48D52306FF4FC6B075DF8 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		28E407B9165729B96C92F293 /* OpenAILLMProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAILLMProvider.swift; sourceTree = "<group>"; };
@@ -51,6 +55,7 @@
 		2D1BE1CC4B6403493E143834 /* ExecutionEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExecutionEngineTests.swift; sourceTree = "<group>"; };
 		2E10C04312A1F051D409D079 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		3B442DCE39E16DBDBB5AA1A9 /* PermissionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionManager.swift; sourceTree = "<group>"; };
+		5E8B688EA7B78B3C757119C3 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		61D48A2DB3969C6DA996F421 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		6D078267D5304E509F42C139 /* AssistiveControlAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AssistiveControlAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F2A1857C223CEF44BCC4897 /* LLMProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMProvider.swift; sourceTree = "<group>"; };
@@ -60,6 +65,7 @@
 		7BF2F202DE04BB6E1B9EE7C7 /* IntentValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntentValidator.swift; sourceTree = "<group>"; };
 		84454B3567E32FA529DEA12D /* RiskLevel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiskLevel.swift; sourceTree = "<group>"; };
 		8EE757CB29B8F659F268F4AD /* AccessibilityController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityController.swift; sourceTree = "<group>"; };
+		90FFAC5CD5D0544EA098266A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9C633FF80D218C3A5E56648E /* Intent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Intent.swift; sourceTree = "<group>"; };
 		9CD1ED7368CA8D99AA63050F /* AssistiveControlApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AssistiveControlApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A593F9B86B3094F0154DDBEF /* LocalLLMProviderDecodeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalLLMProviderDecodeTests.swift; sourceTree = "<group>"; };
@@ -96,6 +102,7 @@
 				6F2A1857C223CEF44BCC4897 /* LLMProvider.swift */,
 				AA39F7004ACF2B6CB9C9D6A0 /* LocalLLMProvider.swift */,
 				28E407B9165729B96C92F293 /* OpenAILLMProvider.swift */,
+				163311AE42AD74FEA7554ED5 /* SystemPrompt.swift */,
 			);
 			path = LLM;
 			sourceTree = "<group>";
@@ -103,9 +110,11 @@
 		4DF0B6F5848E4AE7C9D4AEC9 /* App */ = {
 			isa = PBXGroup;
 			children = (
+				90FFAC5CD5D0544EA098266A /* AppDelegate.swift */,
 				1BC9F25442F3C4914817653E /* AssistiveControlApp.swift */,
 				2B34AB6E1266A7DB875C1081 /* ContentView.swift */,
 				61D48A2DB3969C6DA996F421 /* OnboardingView.swift */,
+				5E8B688EA7B78B3C757119C3 /* SettingsView.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -248,6 +257,7 @@
 				F17994CAA200A7D64BF04A81 /* AccessibilityController.swift in Sources */,
 				7AFE6B50C78F91E76CA7D7F9 /* ActionRegistry.swift in Sources */,
 				A1AAA45D587252393D059DC4 /* AnthropicLLMProvider.swift in Sources */,
+				8C908FF5B23898A369F0C6F1 /* AppDelegate.swift in Sources */,
 				9E58D0C5E34778B86C0C92A3 /* AssistiveControlApp.swift in Sources */,
 				D6F6C2F02DA5A1EE79BF1C15 /* CloudLLMProvider.swift in Sources */,
 				F756C2361C6AC3331B0D0EB1 /* ContentView.swift in Sources */,
@@ -264,6 +274,8 @@
 				BBC5AA097E09AD2EC0DD7C04 /* OpenAILLMProvider.swift in Sources */,
 				AB64B14B6EF6796E630AF916 /* PermissionManager.swift in Sources */,
 				9546E3275FEA37205398E903 /* RiskLevel.swift in Sources */,
+				A47336335FB92F27BD3059AC /* SettingsView.swift in Sources */,
+				790A0CA0E5E323BE8558583A /* SystemPrompt.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

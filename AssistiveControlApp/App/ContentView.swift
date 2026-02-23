@@ -11,6 +11,15 @@
 
 import SwiftUI
 
+// MARK: - Notification Names
+
+extension Notification.Name {
+    /// Posted (by AppDelegate or SettingsView) to clear the current conversation.
+    static let newSession   = Notification.Name("AssistiveControl.newSession")
+    /// Posted by AppDelegate menu to open the Settings sheet.
+    static let openSettings = Notification.Name("AssistiveControl.openSettings")
+}
+
 // MARK: - App Status
 
 enum AppStatus: Equatable {
@@ -46,6 +55,8 @@ struct ConversationEntry: Identifiable {
         case intentSummary
         case executionResult
         case errorMessage
+        /// A rephrasing suggestion returned by the LLM when a request is unsupported.
+        case suggestion
     }
 
     let id = UUID()
@@ -86,6 +97,16 @@ final class ContentViewModel: ObservableObject {
         )
     }
 
+    // MARK: - New Session
+
+    /// Clears conversation history and resets state, starting a fresh interaction.
+    func startNewSession() {
+        conversation.removeAll()
+        llmHistory.removeAll()
+        status = .idle
+        inputText = ""
+    }
+
     // MARK: - Send
 
     func send() {
@@ -118,10 +139,13 @@ final class ContentViewModel: ObservableObject {
             let validation = validator.validate(rawIntent)
 
             switch validation {
-            case .unsupported(let message):
+            case .unsupported(let message, let suggestion):
                 status = .idle
                 append(.intentSummary, "Intent: unsupported")
                 append(.errorMessage, message)
+                if let suggestion = suggestion, !suggestion.isEmpty {
+                    append(.suggestion, suggestion)
+                }
                 appendAssistantHistory("Intent was unsupported: \(message)")
 
             case .invalid(let error):
@@ -187,6 +211,35 @@ final class ContentViewModel: ObservableObject {
             let preview = String(text.prefix(40))
             let ellipsis = text.count > 40 ? "..." : ""
             return "Intent: type text \"\(preview)\(ellipsis)\""
+        case "press_key":
+            let key  = intent.parameters["key"] ?? "?"
+            let mods = intent.parameters["modifiers"].map { " (\($0))" } ?? ""
+            return "Intent: press key \(key)\(mods)"
+        case "right_click_element":
+            let label = intent.parameters["element_label"] ?? "unknown"
+            let app   = intent.parameters["application_name"] ?? "unknown"
+            return "Intent: right-click '\(label)' in \(app)"
+        case "double_click_element":
+            let label = intent.parameters["element_label"] ?? "unknown"
+            let app   = intent.parameters["application_name"] ?? "unknown"
+            return "Intent: double-click '\(label)' in \(app)"
+        case "scroll":
+            let dir = intent.parameters["direction"] ?? "down"
+            let app = intent.parameters["application_name"] ?? "unknown"
+            return "Intent: scroll \(dir) in \(app)"
+        case "move_mouse":
+            if let x = intent.parameters["x"], let y = intent.parameters["y"] {
+                return "Intent: move mouse to (\(x), \(y))"
+            }
+            let label = intent.parameters["element_label"] ?? "unknown"
+            return "Intent: move mouse to '\(label)'"
+        case "left_click_coordinates":
+            let x = intent.parameters["x"] ?? "?"
+            let y = intent.parameters["y"] ?? "?"
+            return "Intent: click at (\(x), \(y))"
+        case "sequence":
+            let count = intent.steps?.count ?? 0
+            return "Intent: sequence (\(count) step\(count == 1 ? "" : "s"))"
         default:
             return "Intent: \(intent.intent)"
         }
@@ -201,7 +254,8 @@ struct ContentView: View {
     @ObservedObject var configStore: LLMConfigurationStore
     @StateObject private var viewModel: ContentViewModel
 
-    @State private var showingSettings = false
+    @State private var showingSettings  = false   // SettingsView
+    @State private var showingAIConfig   = false   // OnboardingView (AI provider config)
 
     init(
         permissionManager: PermissionManager,
@@ -241,21 +295,50 @@ struct ContentView: View {
                 } label: {
                     Image(systemName: "gearshape")
                 }
-                .help("LLM Settings")
+                .help("Settings")
             }
         }
+        // Settings sheet (gear icon or menu bar).
         .sheet(isPresented: $showingSettings) {
+            SettingsView(
+                configStore: configStore,
+                onConfigureAI: {
+                    // Dismiss settings, then open the AI config sheet after a beat.
+                    showingSettings = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                        showingAIConfig = true
+                    }
+                },
+                onDismiss: { showingSettings = false }
+            )
+        }
+        // AI provider reconfiguration sheet (opened from SettingsView or directly).
+        .sheet(isPresented: $showingAIConfig) {
             OnboardingView(configStore: configStore, isReconfiguring: true) {
-                // Refresh the provider so the next send picks up the new config.
                 viewModel.llmProvider = configStore.makeProvider()
-                showingSettings = false
+                showingAIConfig = false
             }
+        }
+        // First-launch onboarding sheet — auto-dismisses when onboarding completes.
+        .sheet(isPresented: Binding(
+            get: { !configStore.hasCompletedOnboarding },
+            set: { _ in }
+        )) {
+            OnboardingView(configStore: configStore) {
+                // onFinish: hasCompletedOnboarding flips to true, sheet auto-dismisses.
+            }
+        }
+        // New session — clear conversation (posted by SettingsView or menu bar).
+        .onReceive(NotificationCenter.default.publisher(for: .newSession)) { _ in
+            viewModel.startNewSession()
+        }
+        // Open settings sheet from menu bar.
+        .onReceive(NotificationCenter.default.publisher(for: .openSettings)) { _ in
+            showingSettings = true
         }
         .onReceive(
             NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)
         ) { _ in
-            // Re-check permission each time the app comes to the foreground —
-            // the user may have granted it in System Settings.
             permissionManager.checkPermission()
         }
     }
@@ -385,7 +468,20 @@ struct ConversationEntryRow: View {
                     .foregroundColor(.secondary)
             }
         }
-        .padding(.vertical, 2)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 6)
+        .background(suggestionBackground)
+        .cornerRadius(entry.kind == .suggestion ? 8 : 0)
+        .padding(.vertical, entry.kind == .suggestion ? 2 : 0)
+    }
+
+    @ViewBuilder
+    private var suggestionBackground: some View {
+        if entry.kind == .suggestion {
+            Color.blue.opacity(0.10)
+        } else {
+            Color.clear
+        }
     }
 
     private var icon: some View {
@@ -403,6 +499,9 @@ struct ConversationEntryRow: View {
             case .errorMessage:
                 Image(systemName: "exclamationmark.triangle")
                     .foregroundColor(.red)
+            case .suggestion:
+                Image(systemName: "lightbulb")
+                    .foregroundColor(.blue)
             }
         }
         .frame(width: 20)

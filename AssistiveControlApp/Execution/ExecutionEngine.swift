@@ -52,6 +52,25 @@ final class ExecutionEngine {
 
         // 3. Dispatch to AccessibilityController via explicit switch.
         //    No dynamic dispatch, no reflection — matches ActionRegistry.riskLevel switch.
+        // Sequence is handled separately — it dispatches recursively, not via AX calls directly.
+        if intent.intent == "sequence" {
+            guard let steps = intent.steps, !steps.isEmpty else {
+                return .failure("Sequence contained no steps.")
+            }
+            for step in steps {
+                let result = await execute(step)
+                if case .failure(let reason) = result {
+                    return .failure("Step '\(step.intent)' failed: \(reason)")
+                }
+                // Pause between steps so the OS can process each action.
+                // App launches need extra time to become accessible in the AX tree.
+                let delay: Duration = step.intent == "open_application" ? .seconds(1.5) : .milliseconds(300)
+                try? await Task.sleep(for: delay)
+            }
+            logger.info("Sequence executed \(steps.count) step(s) successfully.")
+            return .success
+        }
+
         do {
             switch intent.intent {
             case "open_application":
@@ -67,6 +86,61 @@ final class ExecutionEngine {
             case "type_text":
                 let text = intent.parameters["text"] ?? ""
                 try accessibilityController.typeText(text)
+
+            case "press_key":
+                let key       = intent.parameters["key"] ?? ""
+                let modifiers = (intent.parameters["modifiers"] ?? "")
+                    .split(separator: ",")
+                    .map { $0.trimmingCharacters(in: .whitespaces) }
+                    .filter { !$0.isEmpty }
+                let appName   = intent.parameters["application_name"]
+                try accessibilityController.pressKey(key: key, modifiers: modifiers, applicationName: appName)
+
+            case "right_click_element":
+                let appName = intent.parameters["application_name"] ?? ""
+                let label   = intent.parameters["element_label"] ?? ""
+                let role    = intent.parameters["role"]
+                try accessibilityController.rightClickElement(applicationName: appName, label: label, role: role)
+
+            case "double_click_element":
+                let appName = intent.parameters["application_name"] ?? ""
+                let label   = intent.parameters["element_label"] ?? ""
+                let role    = intent.parameters["role"]
+                try accessibilityController.doubleClickElement(applicationName: appName, label: label, role: role)
+
+            case "scroll":
+                let appName   = intent.parameters["application_name"] ?? ""
+                let direction = intent.parameters["direction"] ?? "down"
+                let amount    = Int(intent.parameters["amount"] ?? "3") ?? 3
+                let label     = intent.parameters["element_label"]
+                try accessibilityController.scrollInElement(
+                    applicationName: appName,
+                    label: label,
+                    direction: direction,
+                    amount: amount
+                )
+
+            case "move_mouse":
+                if let xStr = intent.parameters["x"], let yStr = intent.parameters["y"],
+                   let x = Double(xStr), let y = Double(yStr) {
+                    try accessibilityController.moveMouse(to: CGPoint(x: x, y: y))
+                } else if let appName = intent.parameters["application_name"],
+                          let label  = intent.parameters["element_label"] {
+                    try accessibilityController.moveMouseToElement(applicationName: appName, label: label)
+                } else {
+                    throw ExecutionError.executionFailed(
+                        "move_mouse requires either (x, y) coordinates or (application_name + element_label)."
+                    )
+                }
+
+            case "left_click_coordinates":
+                let xStr  = intent.parameters["x"] ?? ""
+                let yStr  = intent.parameters["y"] ?? ""
+                let count = Int(intent.parameters["count"] ?? "1") ?? 1
+                guard let x = Double(xStr), let y = Double(yStr) else {
+                    throw ExecutionError.executionFailed("left_click_coordinates requires numeric x and y values.")
+                }
+                try accessibilityController.clickAt(point: CGPoint(x: x, y: y), count: count)
 
             default:
                 // Should never reach here — ActionRegistry.riskLevel already gated unknown intents.

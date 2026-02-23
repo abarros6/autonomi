@@ -33,6 +33,48 @@ final class ActionRegistry {
             description: "Types the specified text into the currently focused text field. Maximum 500 characters. Secure/password fields are blocked.",
             requiredParameters: ["text"],
             optionalParameters: []
+        ),
+        ActionDescriptor(
+            name: "press_key",
+            description: "Presses a keyboard key with optional modifier keys (cmd, shift, opt, ctrl). Use for shortcuts like Cmd+N, Cmd+S, Escape, Tab, arrow keys, F-keys.",
+            requiredParameters: ["key"],
+            optionalParameters: ["modifiers", "application_name"]
+        ),
+        ActionDescriptor(
+            name: "right_click_element",
+            description: "Right-clicks (secondary click) a UI element in a running macOS application, identified by accessibility label and optional role.",
+            requiredParameters: ["application_name", "element_label"],
+            optionalParameters: ["role"]
+        ),
+        ActionDescriptor(
+            name: "double_click_element",
+            description: "Double-clicks a UI element in a running macOS application, identified by accessibility label and optional role.",
+            requiredParameters: ["application_name", "element_label"],
+            optionalParameters: ["role"]
+        ),
+        ActionDescriptor(
+            name: "scroll",
+            description: "Scrolls in a direction within a running macOS application. Direction must be: up, down, left, or right.",
+            requiredParameters: ["application_name", "direction"],
+            optionalParameters: ["amount", "element_label"]
+        ),
+        ActionDescriptor(
+            name: "move_mouse",
+            description: "Moves the mouse cursor. Provide x and y screen coordinates, OR application_name and element_label to move to a named element.",
+            requiredParameters: [],
+            optionalParameters: ["x", "y", "application_name", "element_label"]
+        ),
+        ActionDescriptor(
+            name: "left_click_coordinates",
+            description: "Clicks at absolute screen pixel coordinates. Use only when the user provides explicit pixel positions or no named element exists. Prefer element-based actions.",
+            requiredParameters: ["x", "y"],
+            optionalParameters: ["count"]
+        ),
+        ActionDescriptor(
+            name: "sequence",
+            description: "Executes an ordered series of actions automatically. Use for multi-step tasks like 'create new file in Excel'. The steps array carries the sub-actions.",
+            requiredParameters: [],
+            optionalParameters: []
         )
     ]
 
@@ -61,6 +103,20 @@ final class ActionRegistry {
         case "click_element":
             return .harmless
         case "type_text":
+            return .harmless
+        case "press_key":
+            return .harmless
+        case "right_click_element":
+            return .harmless
+        case "double_click_element":
+            return .harmless
+        case "scroll":
+            return .harmless
+        case "move_mouse":
+            return .harmless
+        case "left_click_coordinates":
+            return .harmless
+        case "sequence":
             return .harmless
         default:
             return nil

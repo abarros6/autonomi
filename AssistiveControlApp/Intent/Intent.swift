@@ -17,4 +17,11 @@ struct Intent: Codable, Equatable {
     /// If present and < 0.6, IntentValidator will reject the intent.
     /// If nil, confidence is unknown and validation proceeds normally.
     let confidence: Double?
+
+    /// Populated by the LLM when intent == "unsupported" or confidence is low.
+    /// Contains a specific, actionable rephrasing suggestion shown to the user.
+    let suggestion: String?
+
+    /// Populated when intent == "sequence". Contains ordered sub-intents to execute.
+    let steps: [Intent]?
 }

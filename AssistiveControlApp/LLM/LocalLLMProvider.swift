@@ -84,36 +84,9 @@ final class LocalLLMProvider: LLMProvider {
 
     // MARK: - Internal: System Prompt Assembly
 
-    /// Assembles the LLM system prompt by appending the serialized action schema
-    /// to the base instruction. Called at request time so the schema is always current.
+    /// Delegates to the shared buildSystemPrompt function defined in SystemPrompt.swift.
     private func assembleSystemPrompt(availableActions: [ActionDescriptor]) -> String {
-        let base = """
-        You are an intent parser for a macOS assistive control system. \
-        You must output ONLY valid JSON matching the provided schema. \
-        Do not include prose. Do not include explanations. Only return JSON. \
-        If the request cannot be mapped to a supported intent, return: \
-        {"intent": "unsupported", "parameters": {}}.
-        """
-
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted]
-
-        let schemaJSON: String
-        if let data = try? encoder.encode(availableActions),
-           let json = String(data: data, encoding: .utf8) {
-            schemaJSON = json
-        } else {
-            schemaJSON = "[]"
-        }
-
-        return """
-        \(base)
-
-        Available actions:
-        \(schemaJSON)
-
-        Output must conform to: {"intent": "<name>", "parameters": {"<key>": "<value>"}, "confidence": <0.0-1.0>}
-        """
+        buildSystemPrompt(availableActions: availableActions)
     }
 
     // MARK: - Internal: Response Envelope Parsing

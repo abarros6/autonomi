@@ -40,7 +40,8 @@ enum ValidationResult {
     case valid(Intent)
     case invalid(ValidationError)
     /// The intent was recognised as "unsupported" — inform the user but do not execute.
-    case unsupported(String)
+    /// The optional second value is a suggestion from the LLM on how to rephrase.
+    case unsupported(String, String?)
 }
 
 /// Validates a raw Intent decoded from LLM output.
@@ -56,15 +57,28 @@ final class IntentValidator {
         "open_application",
         "click_element",
         "type_text",
+        "press_key",
+        "right_click_element",
+        "double_click_element",
+        "scroll",
+        "move_mouse",
+        "left_click_coordinates",
+        "sequence",
         "unsupported"
     ]
 
     // MARK: - Required parameters per intent
 
     private static let requiredParameters: [String: [String]] = [
-        "open_application": ["bundle_identifier"],
-        "click_element":    ["application_name", "element_label"],
-        "type_text":        ["text"]
+        "open_application":      ["bundle_identifier"],
+        "click_element":         ["application_name", "element_label"],
+        "type_text":             ["text"],
+        "press_key":             ["key"],
+        "right_click_element":   ["application_name", "element_label"],
+        "double_click_element":  ["application_name", "element_label"],
+        "scroll":                ["application_name", "direction"],
+        "left_click_coordinates": ["x", "y"]
+        // move_mouse and sequence have no strictly required params validated here
     ]
 
     // MARK: - Validation Entry Point
@@ -81,7 +95,10 @@ final class IntentValidator {
 
         // 2. Handle the "unsupported" sentinel intent gracefully.
         if intent.intent == "unsupported" {
-            return .unsupported("The requested action is not supported. Please try rephrasing or describing a different task.")
+            return .unsupported(
+                "The requested action is not supported. Please try rephrasing or describing a different task.",
+                intent.suggestion
+            )
         }
 
         // 3. Reject intents not in the supported set.
@@ -105,6 +122,24 @@ final class IntentValidator {
         if intent.intent == "type_text" {
             if let text = intent.parameters["text"], text.count > Self.maxTextLength {
                 return .invalid(.textTooLong(text.count))
+            }
+        }
+
+        // 6. Sequence: validate each step recursively.
+        if intent.intent == "sequence" {
+            guard let steps = intent.steps, !steps.isEmpty else {
+                return .invalid(.missingParameter("steps"))
+            }
+            for step in steps {
+                let stepResult = validate(step)
+                switch stepResult {
+                case .valid:
+                    break
+                case .invalid(let err):
+                    return .invalid(err)
+                case .unsupported:
+                    return .invalid(.unsupportedIntent)
+                }
             }
         }
 
